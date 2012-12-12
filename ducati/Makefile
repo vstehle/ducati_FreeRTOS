@@ -2,12 +2,11 @@
 
 # compiler / linker
 COMPILER=gcc
-CC=arm-none-eabi-gcc
-AR=arm-none-eabi-ar
-LD=arm-none-eabi-ld
-OBJCOPY=arm-none-eabi-objcopy
-LIBGCC=${shell ${CC} -mthumb -march=armv6t2 -print-libgcc-file-name}
-LIBC=${shell ${CC} -mthumb -march=armv6t2 -print-file-name=libc.a}
+CC=arm-linux-gnueabihf-gcc
+AR=arm-linux-gnueabihf-ar
+LD=arm-linux-gnueabihf-ld
+OBJCOPY=arm-linux-gnueabihf-objcopy
+FLAGS := -mthumb -march=armv7-m -mcpu=cortex-m3 -fno-stack-check
 
 # Directories
 OUTPUT_DIR=./out
@@ -41,8 +40,7 @@ OBJS=	${OUTPUT_DIR}/main.o \
 INIT_OBJS=${OUTPUT_DIR}/startup.o
 
 # gcc compiler flags
-CFLAGS=-mthumb         \
-       -mcpu=cortex-m3 \
+CFLAGS=$(FLAGS)        \
        -MD \
        -O2
 
@@ -65,7 +63,7 @@ ${OUTPUT_DIR}:
 	mkdir ${OUTPUT_DIR}
 
 build: ${INIT_OBJS} ${OBJS}
-	$(LD) -T ducati.ld --entry "ResetISR" $(LDFLAGS) -o FreeRTOS_ducati.axf  $^ $(LIBC) $(LIBGCC) $(LDLIBS)
+	$(LD) -nostdlib -T ducati.ld --entry "ResetISR" $(LDFLAGS) -o FreeRTOS_ducati.axf  $^ $(LDLIBS)
 
 ${OUTPUT_DIR}/%.o : %.c
 	$(CC) $(CFLAGS) -Dgcc -o $@ -c $<
