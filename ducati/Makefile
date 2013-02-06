@@ -64,7 +64,7 @@ ${OUTPUT_DIR}:
 	mkdir ${OUTPUT_DIR}
 
 build: ${INIT_OBJS} ${OBJS}
-	$(LD) -nostdlib -T ducati.ld --entry "ResetISR" $(LDFLAGS) -o $(OUTPUT_DIR)/FreeRTOS_ducati.axf  $^ -L$(LDLIBS) -lc
+	$(LD) -nostdlib -T ducati.ld --entry "ResetISR" $(LDFLAGS) -o $(OUTPUT_DIR)/FreeRTOS_ducati.axf  $^ $(LDLIBS) -lc
 
 ${OUTPUT_DIR}/%.o : %.c
 	$(CC) $(CFLAGS) -Dgcc -o $@ -c $<
