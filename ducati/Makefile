@@ -6,6 +6,7 @@ CC=arm-linux-gnueabihf-gcc
 AR=arm-linux-gnueabihf-ar
 LD=arm-linux-gnueabihf-ld
 OBJCOPY=arm-linux-gnueabihf-objcopy
+FLAGS := -mthumb -march=armv7-m -mcpu=cortex-m3 -fno-stack-protector -static -O2
 
 # Directories
 OUTPUT_DIR=./out
@@ -35,12 +36,12 @@ OBJS=	${OUTPUT_DIR}/main.o \
 	${OUTPUT_DIR}/PollQ.o	\
 	${OUTPUT_DIR}/integer.o \
 	${OUTPUT_DIR}/semtest.o \
+	${OUTPUT_DIR}/libc.o \
 
 INIT_OBJS=${OUTPUT_DIR}/startup.o
 
 # gcc compiler flags
-CFLAGS=-mthumb         \
-       -mcpu=cortex-m3 \
+CFLAGS=$(FLAGS)        \
        -MD \
        -O2 \
        -fno-stack-protector
@@ -64,7 +65,7 @@ ${OUTPUT_DIR}:
 	mkdir ${OUTPUT_DIR}
 
 build: ${INIT_OBJS} ${OBJS}
-	$(LD) -T ducati.ld --entry "ResetISR" $(LDFLAGS) -o $(OUTPUT_DIR)/FreeRTOS_ducati.axf  $^ -L$(LDLIBS) -lc
+	$(LD) -nostdlib -static -T ducati.ld --entry "ResetISR" $(LDFLAGS) -o $(OUTPUT_DIR)/FreeRTOS_ducati.axf  $^ $(LDLIBS)
 
 ${OUTPUT_DIR}/%.o : %.c
 	$(CC) $(CFLAGS) -Dgcc -o $@ -c $<
